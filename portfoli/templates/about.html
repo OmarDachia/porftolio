@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block meta_description %}Learn about John Developer - Full Stack Developer with 5+ years of experience in web development. Skills, experience, and education.{% endblock %}
+
+{% block title %}About Me | John Developer{% endblock %}
+
+{% block content %}
+<!-- About Header -->
+<section class="about-header">
+    <div class="container">
+        <h1>About Me</h1>
+        <p>Passionate developer creating impactful digital solutions</p>
+    </div>
+</section>
+
+<!-- About Content -->
+<section class="about-content">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-text">
+                <h2>Who I Am</h2>
+                <p>{{ bio }}</p>
+                
+                <h2>Experience</h2>
+                <div class="experience-list">
+                    {% for job in experience %}
+                        <div class="experience-item">
+                            <div class="exp-header">
+                                <h3>{{ job.title }}</h3>
+                                <span class="exp-company">{{ job.company }}</span>
+                                <span class="exp-period">{{ job.period }}</span>
+                            </div>
+                            <p>{{ job.description }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <h2>Education</h2>
+                <div class="education-item">
+                    <h3>{{ education.degree }}</h3>
+                    <p>{{ education.institution }}</p>
+                    <span class="education-year">{{ education.year }}</span>
+                </div>
+            </div>
+            
+            <div class="about-sidebar">
+                <!-- Skills Section -->
+                <div class="skills-section">
+                    <h2>Technical Skills</h2>
+                    {% for category, skills_list in skills.items %}
+                        <div class="skill-category">
+                            <h3>{{ category }}</h3>
+                            <div class="skill-tags">
+                                {% for skill in skills_list %}
+                                    <span class="skill-tag">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Quick Info -->
+                <div class="quick-info">
+                    <h3>Quick Info</h3>
+                    <ul>
+                        <li>📍 San Francisco, CA</li>
+                        <li>💼 Open to opportunities</li>
+                        <li>🎯 Available for freelance</li>
+                        <li>🚀 Love building products</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fun Facts -->
+<section class="fun-facts">
+    <div class="container">
+        <div class="facts-grid">
+            <div class="fact-item">
+                <span class="fact-number">5+</span>
+                <span class="fact-label">Years Coding</span>
+            </div>
+            <div class="fact-item">
+                <span class="fact-number">50+</span>
+                <span class="fact-label">Projects</span>
+            </div>
+            <div class="fact-item">
+                <span class="fact-number">30+</span>
+                <span class="fact-label">Happy Clients</span>
+            </div>
+            <div class="fact-item">
+                <span class="fact-number">10+</span>
+                <span class="fact-label">Open Source Contributions</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

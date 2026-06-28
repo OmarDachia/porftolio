@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block meta_description %}John Developer - Professional Full Stack Developer portfolio. Building amazing web experiences with Django, React, and modern technologies.{% endblock %}
+
+{% block title %}John Developer | Full Stack Developer Portfolio{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge">👋 Welcome to my portfolio</div>
+                <h1 class="hero-title">
+                    Hi, I'm <span class="highlight">{{ name }}</span>
+                </h1>
+                <p class="hero-subtitle">{{ title }}</p>
+                <p class="hero-description">{{ bio }}</p>
+                <div class="hero-buttons">
+                    <a href="{{ cta_link }}" class="btn btn-primary">
+                        {{ cta_text }} →
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-secondary">
+                        Let's Talk
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">5+</span>
+                        <span class="stat-label">Years Experience</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Projects Completed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">30+</span>
+                        <span class="stat-label">Happy Clients</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="profile-placeholder">
+                    <div class="avatar">👨‍💻</div>
+                    <div class="floating-badge badge-1">Python</div>
+                    <div class="floating-badge badge-2">Django</div>
+                    <div class="floating-badge badge-3">React</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Projects Preview -->
+<section class="featured-projects">
+    <div class="container">
+        <div class="section-header">
+            <h2>Featured Projects</h2>
+            <p>Some of my recent work</p>
+        </div>
+        <div class="project-previews">
+            <div class="project-card">
+                <div class="project-icon">🛒</div>
+                <h3>E-Commerce Platform</h3>
+                <p>Full-featured online store with Django and Stripe</p>
+                <a href="{% url 'projects' %}" class="btn btn-sm">View Project →</a>
+            </div>
+            <div class="project-card">
+                <div class="project-icon">📋</div>
+                <h3>Task Management App</h3>
+                <p>Real-time collaborative project management tool</p>
+                <a href="{% url 'projects' %}" class="btn btn-sm">View Project →</a>
+            </div>
+            <div class="project-card">
+                <div class="project-icon">🌤️</div>
+                <h3>Weather Dashboard</h3>
+                <p>Interactive weather app with live data</p>
+                <a href="{% url 'projects' %}" class="btn btn-sm">View Project →</a>
+            </div>
+        </div>
+        <div class="text-center">
+            <a href="{% url 'projects' %}" class="btn btn-outline">View All Projects →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to build something amazing?</h2>
+            <p>Let's work together to create your next project</p>
+            <a href="{% url 'contact' %}" class="btn btn-primary btn-large">
+                Get In Touch →
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
