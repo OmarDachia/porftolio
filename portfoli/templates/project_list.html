@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Projects | John Developer{% endblock %}
+
+{% block content %}
+<div class="projects-page">
+    <div class="projects-container">
+        <!-- Page Header -->
+        <div class="projects-header">
+            <h1>🚀 My Projects</h1>
+            <p>Showcasing my work and passion for development</p>
+        </div>
+
+        <!-- Add Project Button -->
+        <div style="text-align: right; margin-bottom: 20px;">
+            <a href="{% url 'project_create' %}" class="add-project-btn">
+                Add New Project
+            </a>
+        </div>
+
+        <!-- Project Grid -->
+        <div class="project-grid">
+            {% for project in projects %}
+                <div class="project-card">
+                    <!-- Project Image -->
+                    <div class="project-image-wrapper">
+                        {% if project.image %}
+                            <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                        {% else %}
+                            <div class="project-image-placeholder">
+                                📁
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Status Badge -->
+                        {% if project.status %}
+                            <span class="project-badge project-status {{ project.status|lower }}">
+                                {{ project.status }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Project Content -->
+                    <div class="project-content">
+                        <h3 class="project-title">
+                            <a href="{% url 'project_detail' pk=project.pk %}">
+                                {{ project.title }}
+                            </a>
+                        </h3>
+                        
+                        <p class="project-description">
+                            {{ project.description|truncatechars:150 }}
+                        </p>
+
+                        <!-- Technologies -->
+                        {% if project.technologies %}
+                            <div class="project-tech">
+                                {% for tech in project.technologies.split %}
+                                    {% if tech != '' %}
+                                        <span class="tech-tag">{{ tech }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Project Meta -->
+                        <div class="project-meta">
+                            <span class="project-date">
+                                {% if project.created_at %}
+                                    📅 {{ project.created_at|date:"M d, Y" }}
+                                {% endif %}
+                            </span>
+                            
+                            <div class="project-links">
+                                {% if project.github_url %}
+                                    <a href="{{ project.github_url }}" target="_blank" class="project-link github">
+                                        GitHub
+                                    </a>
+                                {% endif %}
+                                {% if project.live_url %}
+                                    <a href="{{ project.live_url }}" target="_blank" class="project-link">
+                                        Live Demo
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'project_detail' pk=project.pk %}" class="project-link">
+                                    Details →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <!-- Empty State -->
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-icon">📭</div>
+                    <h2>No Projects Yet</h2>
+                    <p>Start building your portfolio by adding your first project!</p>
+                    <a href="{% url 'project_create' %}" class="add-project-btn">
+                        Add Your First Project
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

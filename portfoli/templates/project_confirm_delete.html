@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Project: {{ project.title }} | John Developer{% endblock %}
+
+{% block meta_description %}Confirm deletion of project "{{ project.title }}" from your portfolio{% endblock %}
+
+{% block content %}
+<div class="delete-confirm-page">
+    <div class="delete-confirm-container">
+        
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+            <ol class="breadcrumb">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'project_list' %}">Projects</a></li>
+                <li><a href="{% url 'project_detail' pk=project.pk %}">{{ project.title|truncatechars:20 }}</a></li>
+                <li class="active">Delete</li>
+            </ol>
+        </nav>
+
+        <!-- Delete Card -->
+        <div class="delete-card">
+            
+            <!-- Warning Icon -->
+            <span class="warning-icon">🗑️</span>
+            
+            <!-- Delete Header -->
+            <div class="delete-header">
+                <h1>Delete Project</h1>
+                <p class="warning-subtitle">This action cannot be undone</p>
+            </div>
+
+            <!-- Project Preview -->
+            <div class="project-preview">
+                <h3 class="project-title">📁 {{ project.title }}</h3>
+                <div class="project-meta">
+                    {% if project.category %}
+                        <span>📂 {{ project.category }}</span>
+                    {% endif %}
+                    {% if project.status %}
+                        <span>📊 {{ project.status }}</span>
+                    {% endif %}
+                    {% if project.created_at %}
+                        <span>📅 {{ project.created_at|date:"M d, Y" }}</span>
+                    {% endif %}
+                </div>
+                {% if project.description %}
+                    <p class="project-description">{{ project.description|truncatechars:100 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Warning Message -->
+            <div class="warning-message">
+                <span class="warning-icon-small">⚠️</span>
+                <p>
+                    <strong>Warning:</strong> You are about to permanently delete 
+                    <strong>"{{ project.title }}"</strong>. This action cannot be reversed 
+                    and all associated data will be lost.
+                </p>
+            </div>
+
+            <!-- Confirmation Form -->
+            <form method="post" id="deleteForm">
+                {% csrf_token %}
+                
+                <!-- Action Buttons -->
+                <div class="delete-actions">
+                    <button type="submit" class="btn btn-danger" id="deleteBtn">
+                        <span class="icon">🗑️</span>
+                        Yes, Delete Project
+                    </button>
+                    
+                    <a href="{% url 'project_detail' pk=project.pk %}" class="btn btn-secondary">
+                        <span class="icon">✖</span>
+                        Cancel
+                    </a>
+                    
+                    <a href="{% url 'project_list' %}" class="btn btn-info">
+                        <span class="icon">📋</span>
+                        View All Projects
+                    </a>
+                </div>
+            </form>
+
+            <!-- Danger Zone -->
+            <div class="danger-zone">
+                <span class="danger-label">⚠️ Danger Zone</span>
+                <p>This project will be permanently deleted from your portfolio.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add confirmation dialog to prevent accidental deletion
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForm = document.getElementById('deleteForm');
+        const deleteBtn = document.getElementById('deleteBtn');
+        
+        deleteForm.addEventListener('submit', function(e) {
+            const confirmed = confirm(
+                '⚠️ Are you absolutely sure you want to delete "{{ project.title }}"?\n\n' +
+                'This action cannot be undone and all associated data will be permanently removed.'
+            );
+            
+            if (!confirmed) {
+                e.preventDefault();
+                // Shake animation for warning
+                deleteBtn.classList.add('shake');
+                setTimeout(() => {
+                    deleteBtn.classList.remove('shake');
+                }, 500);
+            } else {
+                // Show loading state
+                deleteBtn.innerHTML = '⏳ Deleting...';
+                deleteBtn.disabled = true;
+            }
+        });
+        
+        // Prevent accidental double-click
+        deleteBtn.addEventListener('click', function() {
+            if (this.disabled) {
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}

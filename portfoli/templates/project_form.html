@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.pk %}
+        Edit Project: {{ form.instance.title }}
+    {% else %}
+        Add New Project
+    {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+    {% if form.instance.pk %}
+        Edit project details for {{ form.instance.title }}
+    {% else %}
+        Add a new project to your portfolio
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="project-form-page">
+    <div class="project-form-container">
+        
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+            <ol class="breadcrumb">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'project_list' %}">Projects</a></li>
+                {% if form.instance.pk %}
+                    <li><a href="{% url 'project_detail' pk=form.instance.pk %}">{{ form.instance.title|truncatechars:20 }}</a></li>
+                    <li class="active">Edit</li>
+                {% else %}
+                    <li class="active">Add New Project</li>
+                {% endif %}
+            </ol>
+        </nav>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            
+            <!-- Form Header -->
+            <div class="form-header">
+                <h1>
+                    {% if form.instance.pk %}
+                        ✏️ Edit Project
+                    {% else %}
+                        ➕ Add New Project
+                    {% endif %}
+                </h1>
+                <p class="form-subtitle">
+                    {% if form.instance.pk %}
+                        Update the details of your project
+                    {% else %}
+                        Fill in the details to add a new project to your portfolio
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Form -->
+            <form method="post" enctype="multipart/form-data" class="project-form" novalidate>
+                {% csrf_token %}
+                
+                <!-- Loop through form fields -->
+                {% for field in form %}
+                    <div class="form-group {% if field.errors %}has-error{% endif %}">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </label>
+                        
+                        {{ field }}
+                        
+                        {% if field.help_text %}
+                            <span class="help-text">{{ field.help_text }}</span>
+                        {% endif %}
+                        
+                        {% if field.errors %}
+                            <div class="error-message">
+                                {{ field.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="icon">💾</span>
+                        {% if form.instance.pk %}
+                            Update Project
+                        {% else %}
+                            Save Project
+                        {% endif %}
+                    </button>
+                    
+                    <a href="{% url 'project_list' %}" class="btn btn-secondary">
+                        <span class="icon">✖</span>
+                        Cancel
+                    </a>
+                    
+                    {% if form.instance.pk %}
+                        <a href="{% url 'project_detail' pk=form.instance.pk %}" class="btn btn-secondary">
+                            <span class="icon">👁️</span>
+                            View Project
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+
+            <!-- Form Tips -->
+            <div class="form-tips">
+                <h4>💡 Tips for a great project entry:</h4>
+                <ul>
+                    <li>Use a clear, descriptive title</li>
+                    <li>Add a comprehensive description</li>
+                    <li>List technologies separated by commas (e.g., Django, React, PostgreSQL)</li>
+                    <li>Upload a high-quality project image</li>
+                    <li>Include live demo and GitHub links if available</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
