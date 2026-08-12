@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register | John Developer{% endblock %}
+
+{% block meta_description %}Create a new account to manage your portfolio and projects.{% endblock %}
+
+{% block content %}
+<div class="register-page">
+    <div class="register-container">
+        
+        <!-- Registration Card -->
+        <div class="register-card">
+            
+            <!-- Registration Header -->
+            <div class="register-header">
+                <span class="register-icon">📝</span>
+                <h2>Create Account</h2>
+                <p class="register-subtitle">Join us and start building your portfolio</p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step active">
+                    <span class="step-number">1</span>
+                    <span class="step-label">Account</span>
+                </div>
+                <div class="step-connector active"></div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <span class="step-label">Profile</span>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <span class="step-label">Complete</span>
+                </div>
+            </div>
+
+            <!-- Display Django messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'success' %}success-messages{% else %}error-messages{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Display form errors -->
+            {% if form.non_field_errors %}
+                <div class="non-field-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Registration Form -->
+            <form method="post" class="register-form" id="registerForm" novalidate>
+                {% csrf_token %}
+                
+                <!-- Loop through form fields -->
+                {% for field in form %}
+                    <div class="form-group {% if field.errors %}has-error{% endif %}">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% else %}
+                                <span class="optional">(optional)</span>
+                            {% endif %}
+                        </label>
+                        
+                        <div class="input-with-icon">
+                            <!-- Add icon based on field name -->
+                            {% if field.name == 'username' %}
+                                <span class="input-icon">👤</span>
+                            {% elif field.name == 'email' %}
+                                <span class="input-icon">✉️</span>
+                            {% elif field.name == 'password1' or field.name == 'password2' %}
+                                <span class="input-icon">🔑</span>
+                            {% elif field.name == 'first_name' %}
+                                <span class="input-icon">📝</span>
+                            {% elif field.name == 'last_name' %}
+                                <span class="input-icon">📋</span>
+                            {% endif %}
+                            
+                            {{ field }}
+                            
+                            <!-- Add password toggle for password fields -->
+                            {% if field.name == 'password1' or field.name == 'password2' %}
+                                <button type="button" class="password-toggle" onclick="togglePassword('{{ field.id_for_label }}')">
+                                    👁️
+                                </button>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Password strength indicator (only for password1) -->
+                        {% if field.name == 'password1' %}
+                            <div class="password-strength" id="passwordStrength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill" id="strengthFill"></div>
+                                </div>
+                                <div class="strength-text" id="strengthText">Enter a password</div>
+                            </div>
+                            <div class="password-requirements" id="passwordRequirements">
+                                <span class="req" id="reqLength">❌ Min 8 characters</span>
+                                <span class="req" id="reqNumber">❌ Contains number</span>
+                                <span class="req" id="reqUpper">❌ Contains uppercase</span>
+                                <span class="req" id="reqSpecial">❌ Contains special character</span>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Help text -->
+                        {% if field.help_text %}
+                            <div class="help-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        
+                        <!-- Field errors -->
+                        {% if field.errors %}
+                            <div class="field-error">
+                                {{ field.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <!-- Terms and Conditions -->
+                <div class="form-group">
+                    <label class="terms-checkbox">
+                        <input type="checkbox" name="terms" id="terms" required>
+                        <span class="terms-text">
+                            I agree to the 
+                            <a href="#" target="_blank">Terms of Service</a> and 
+                            <a href="#" target="_blank">Privacy Policy</a>
+                        </span>
+                    </label>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="btn-register" id="registerBtn">
+                    <span class="btn-text">Create Account →</span>
+                    <span class="spinner">⏳</span>
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <div class="login-link">
+                <p>
+                    Already have an account? 
+                    <a href="{% url 'login' %}">Login here</a>
+                </p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // === Password Toggle ===
+    function togglePassword(fieldId) {
+        const passwordField = document.getElementById(fieldId);
+        const toggleBtn = passwordField.parentElement.querySelector('.password-toggle');
+        
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleBtn.textContent = '🙈';
+        } else {
+            passwordField.type = 'password';
+            toggleBtn.textContent = '👁️';
+        }
+    }
+    
+    // === Password Strength Checker ===
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordField = document.querySelector('input[name="password1"]');
+        
+        if (passwordField) {
+            passwordField.addEventListener('input', function() {
+                const password = this.value;
+                const strength = checkPasswordStrength(password);
+                updateStrengthUI(strength);
+                updateRequirements(password);
+            });
+        }
+    });
+    
+    function checkPasswordStrength(password) {
+        let score = 0;
+        
+        if (password.length >= 8) score++;
+        if (password.match(/[0-9]/)) score++;
+        if (password.match(/[A-Z]/)) score++;
+        if (password.match(/[^a-zA-Z0-9]/)) score++;
+        
+        if (password.length === 0) return { level: 'none', score: 0 };
+        if (score <= 1) return { level: 'weak', score: 1 };
+        if (score === 2) return { level: 'fair', score: 2 };
+        if (score === 3) return { level: 'good', score: 3 };
+        return { level: 'strong', score: 4 };
+    }
+    
+    function updateStrengthUI(strength) {
+        const fill = document.getElementById('strengthFill');
+        const text = document.getElementById('strengthText');
+        
+        const levels = {
+            none: { class: '', text: 'Enter a password' },
+            weak: { class: 'weak', text: 'Weak - Try adding more variety' },
+            fair: { class: 'fair', text: 'Fair - Getting better!' },
+            good: { class: 'good', text: 'Good - Almost there!' },
+            strong: { class: 'strong', text: 'Strong - Great password!' }
+        };
+        
+        const level = levels[strength.level];
+        fill.className = 'strength-fill ' + (strength.level !== 'none' ? level.class : '');
+        text.className = 'strength-text ' + (strength.level !== 'none' ? level.class : '');
+        text.textContent = level.text;
+    }
+    
+    function updateRequirements(password) {
+        const checks = {
+            length: password.length >= 8,
+            number: /[0-9]/.test(password),
+            upper: /[A-Z]/.test(password),
+            special: /[^a-zA-Z0-9]/.test(password)
+        };
+        
+        document.getElementById('reqLength').textContent = 
+            (checks.length ? '✅' : '❌') + ' Min 8 characters';
+        document.getElementById('reqNumber').textContent = 
+            (checks.number ? '✅' : '❌') + ' Contains number';
+        document.getElementById('reqUpper').textContent = 
+            (checks.upper ? '✅' : '❌') + ' Contains uppercase';
+        document.getElementById('reqSpecial').textContent = 
+            (checks.special ? '✅' : '❌') + ' Contains special character';
+        
+        // Color the requirements
+        document.querySelectorAll('.req').forEach(el => {
+            el.className = 'req' + (el.textContent.startsWith('✅') ? ' valid' : ' invalid');
+        });
+    }
+    
+    // === Form Submission Loading State ===
+    document.addEventListener('DOMContentLoaded', function() {
+        const registerForm = document.getElementById('registerForm');
+        const registerBtn = document.getElementById('registerBtn');
+        const termsCheckbox = document.getElementById('terms');
+        
+        registerForm.addEventListener('submit', function(e) {
+            // Check if terms are accepted
+            if (!termsCheckbox.checked) {
+                e.preventDefault();
+                alert('Please accept the Terms of Service and Privacy Policy.');
+                termsCheckbox.focus();
+                return false;
+            }
+            
+            // Show loading state
+            registerBtn.classList.add('loading');
+            registerBtn.disabled = true;
+            registerBtn.querySelector('.btn-text').textContent = 'Creating account...';
+        });
+        
+        // Prevent double submission
+        registerForm.addEventListener('submit', function(e) {
+            if (registerBtn.disabled) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Auto-focus on username field
+        const usernameField = document.querySelector('input[name="username"]');
+        if (usernameField) {
+            usernameField.focus();
+        }
+    });
+    
+    // === Password Match Validation ===
+    document.addEventListener('DOMContentLoaded', function() {
+        const password1 = document.querySelector('input[name="password1"]');
+        const password2 = document.querySelector('input[name="password2"]');
+        
+        if (password1 && password2) {
+            password2.addEventListener('input', function() {
+                if (this.value !== password1.value) {
+                    this.parentElement.parentElement.classList.add('has-error');
+                    // Add error message if not exists
+                    let errorMsg = this.parentElement.parentElement.querySelector('.field-error');
+                    if (!errorMsg) {
+                        errorMsg = document.createElement('div');
+                        errorMsg.className = 'field-error';
+                        errorMsg.textContent = '⚠️ Passwords do not match';
+                        this.parentElement.parentElement.appendChild(errorMsg);
+                    }
+                } else {
+                    this.parentElement.parentElement.classList.remove('has-error');
+                    const errorMsg = this.parentElement.parentElement.querySelector('.field-error');
+                    if (errorMsg) {
+                        errorMsg.remove();
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'portfoli',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,12 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Redirect to this URL after a successful login
+LOGIN_REDIRECT_URL = '/'
+# Redirect to this URL after a successful logout
+LOGOUT_REDIRECT_URL = '/'
+# URL to redirect to if a user tries to access a login_required view without being logged in
+LOGIN_URL = '/accounts/login/'
+APP_DIRS: True
+

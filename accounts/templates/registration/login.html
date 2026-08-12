@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login | John Developer{% endblock %}
+
+{% block meta_description %}Login to your account to manage your portfolio and projects.{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-container">
+        
+        <!-- Login Card -->
+        <div class="login-card">
+            
+            <!-- Login Header -->
+            <div class="login-header">
+                <span class="login-icon">🔐</span>
+                <h2>Welcome Back</h2>
+                <p class="login-subtitle">Login to your account to continue</p>
+            </div>
+
+            <!-- Display Django messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'success' %}success-messages{% else %}error-messages{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Display form errors (non-field errors) -->
+            {% if form.non_field_errors %}
+                <div class="non-field-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Login Form -->
+            <form method="post" class="login-form" id="loginForm" novalidate>
+                {% csrf_token %}
+                
+                <!-- Loop through form fields -->
+                {% for field in form %}
+                    <div class="form-group {% if field.errors %}has-error{% endif %}">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </label>
+                        
+                        <div class="input-with-icon">
+                            <!-- Add icon based on field name -->
+                            {% if field.name == 'username' or field.name == 'email' %}
+                                <span class="input-icon">👤</span>
+                            {% elif field.name == 'password' %}
+                                <span class="input-icon">🔑</span>
+                            {% endif %}
+                            
+                            {{ field }}
+                            
+                            <!-- Add password toggle for password field -->
+                            {% if field.name == 'password' %}
+                                <button type="button" class="password-toggle" onclick="togglePassword()">
+                                    👁️
+                                </button>
+                            {% endif %}
+                        </div>
+                        
+                        {% if field.help_text %}
+                            <span class="help-text">{{ field.help_text }}</span>
+                        {% endif %}
+                        
+                        {% if field.errors %}
+                            <div class="field-error">
+                                {{ field.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <!-- Form Options -->
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember" id="remember">
+                        Remember me
+                    </label>
+                    <a href="{% url 'password_reset' %}" class="forgot-password">
+                        Forgot password?
+                    </a>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span class="btn-text">Login →</span>
+                    <span class="spinner">⏳</span>
+                </button>
+            </form>
+
+            <!-- Register Link -->
+            <div class="register-link">
+                <p>
+                    Don't have an account? 
+                    <a href="{% url 'register' %}">Register here</a>
+                </p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // === Password Toggle ===
+    function togglePassword() {
+        const passwordField = document.querySelector('input[name="password"]');
+        const toggleBtn = document.querySelector('.password-toggle');
+        
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleBtn.textContent = '🙈';
+        } else {
+            passwordField.type = 'password';
+            toggleBtn.textContent = '👁️';
+        }
+    }
+    
+    // === Form Submission Loading State ===
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+
+        loginForm.addEventListener('submit', function(e) {
+            // Prevent double submission first
+            if (loginBtn.disabled) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Then show loading state and disable
+            loginBtn.classList.add('loading');
+            loginBtn.disabled = true;
+            loginBtn.querySelector('.btn-text').textContent = 'Logging in...';
+        });
+
+        // Auto-focus on username field
+        const usernameField = document.querySelector('input[name="username"]');
+        if (usernameField) {
+            usernameField.focus();
+        }
+
+        // Ctrl+Enter to submit
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                const form = document.getElementById('loginForm');
+                if (form) {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

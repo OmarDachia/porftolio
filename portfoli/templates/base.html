@@ -29,6 +29,17 @@
                 <li><a href="{% url 'about' %}" class="{% if 'about' in request.path %}active{% endif %}">About</a></li>
                 <li><a href="{% url 'projects' %}" class="{% if 'projects' in request.path %}active{% endif %}">Projects</a></li>
                 <li><a href="{% url 'contact' %}" class="{% if 'contact' in request.path %}active{% endif %} nav-cta">Contact</a></li>
+                {% if user.is_authenticated %}
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-cta"">Logout</button>
+                        </form>
+                        <!-- <a href="{% url 'logout' %}" class="nav-cta">Logout</a></li> -->
+                {% else %}
+                    <li><a href="{% url 'login' %}" class="nav-cta">Login</a></li>
+                {% endif %}
+
             </ul>
         </div>
     </nav>

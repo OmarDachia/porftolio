@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
@@ -228,6 +229,7 @@ def project_detail(request, pk):
     project = get_object_or_404(Project, pk=pk)
     return render(request, 'project_detail.html', {'project': project})
 
+@login_required
 def project_create(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST, request.FILES) # request.FILES is crucial for ImageField
@@ -238,6 +240,7 @@ def project_create(request):
         form = ProjectForm()
     return render(request, 'project_form.html', {'form': form})
 
+@login_required
 def project_update(request, pk):
     project = get_object_or_404(Project, pk=pk)
     if request.method == 'POST':
@@ -249,6 +252,7 @@ def project_update(request, pk):
         form = ProjectForm(instance=project)
     return render(request, 'project_form.html', {'form': form})
 
+@login_required
 def project_delete(request, pk):
     project = get_object_or_404(Project, pk=pk)
     if request.method == 'POST':
